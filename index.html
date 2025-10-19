@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Jelly, Set, Jump!</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background-color: #0d0d0d;
+        color: #f5f5f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      header {
+        text-align: center;
+        padding: 1.5em 1em 0.5em;
+      }
+
+      header h1 {
+        font-size: 1.8em;
+        margin: 0;
+        color: #32c1ff;
+      }
+
+      header p {
+        font-size: 1em;
+        color: #dcdcdc;
+      }
+
+      #unity-container {
+        margin: 1em auto;
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 960px;
+      }
+
+      #unity-canvas {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/10;
+      }
+
+      #unity-loading-bar {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      footer {
+        text-align: left;
+        padding: 1.5em;
+        max-width: 960px;
+        background: #1a1a1a;
+        border-radius: 12px;
+        margin: 1em;
+      }
+
+      footer h3 {
+        text-align: center;
+        color: #ff5252;
+        margin-top: 0;
+      }
+
+      footer ul {
+        padding-left: 1.2em;
+        line-height: 1.5;
+      }
+
+      footer li {
+        margin-bottom: 0.5em;
+      }
+
+      footer p {
+        margin-top: 1.2em;
+        text-align: center;
+      }
+
+      a.button {
+        display: inline-block;
+        margin-top: 0.8em;
+        background: #32c1ff;
+        color: #000;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.6em 1.2em;
+        border-radius: 8px;
+        transition: background 0.2s;
+      }
+      a.button:hover {
+        background: #5ad3ff;
+      }
+
+      @media (max-width: 768px) {
+        #unity-container {
+          max-width: 100%;
+        }
+        #unity-canvas {
+          aspect-ratio: 9/16;
+          height: 100vh;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Jelly, Set, Jump!</h1>
+      <p>A logical jumper game</p>
+      <a href="downloads/JellySetJump_Android.apk" class="button">Download Android Version</a>
+      <a href="downloads/JellySetJump_PC.zip" class="button">Download PC Version</a>
+    </header>
+
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"></div>
+    </div>
+
+    <footer>
+      <h3>❗❗❗ Read this before you click ❗❗❗</h3>
+      <ul>
+        <li>Try to play all 14 levels to get the full experience.</li>
+        <li>Make sure your network is good and stable.</li>
+        <li>Loading for the first time may take awhile.</li>
+        <li>Make sure your browser isn't outdated.</li>
+        <li>Clear your browser's cache if loading issue persists.</li>
+      </ul>
+      <p>
+        If you still have issues with the web version, download and install either the Android or PC version.<br><br>
+        Thanks. Enjoy!
+      </p>
+    </footer>
+
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(() => {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/Prototype Build.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/Prototype Build.data.br",
+        frameworkUrl: buildUrl + "/Prototype Build.framework.js.br",
+        codeUrl: buildUrl + "/Prototype Build.wasm.br",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Oshoma Games",
+        productName: "Jelly, Set, Jump!",
+        productVersion: "1.0",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+      } else {
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
